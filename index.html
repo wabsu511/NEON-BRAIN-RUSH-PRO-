@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b1d">
+<title>NEON BRAIN RUSH — Live Challenge</title>
+<style>
+:root{--bg:#080b1d;--panel:#111936;--cyan:#35e7ff;--pink:#ff3cac;--violet:#9b5cff;--gold:#ffd166;--muted:#a9b4d6}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 15% 5%,#25205b 0,transparent 38%),radial-gradient(ellipse at 90% 25%,#123c58 0,transparent 35%),var(--bg);color:#fff;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+button{font:inherit;cursor:pointer}.wrap{width:min(980px,100%);margin:auto;padding:22px 16px 36px}.top{text-align:center;margin:8px 0 22px}.tag{display:inline-block;border:1px solid #35e7ff77;color:var(--cyan);border-radius:999px;padding:6px 13px;font-size:12px;letter-spacing:2px}.logo{font-size:clamp(34px,8vw,68px);line-height:1.05;font-weight:1000;letter-spacing:-2px;margin:13px 0;background:linear-gradient(90deg,#fff,#35e7ff,#b47cff,#ff3cac);background-clip:text;color:transparent;text-shadow:0 0 34px #35e7ff33}.sub{color:var(--muted);letter-spacing:2px;font-size:12px}
+.panel{background:linear-gradient(145deg,#141d3beF,#0d1430f2);border:1px solid #8da5ff38;border-radius:24px;padding:clamp(14px,3vw,26px);box-shadow:0 20px 80px #0008, inset 0 1px #ffffff12}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{background:#080f27;border:1px solid #ffffff12;border-radius:15px;padding:12px;text-align:center}.stat small{display:block;color:var(--muted);font-size:11px;letter-spacing:1px}.stat strong{display:block;font-size:clamp(22px,5vw,32px);margin-top:3px}.cyan{color:var(--cyan)}.pink{color:var(--pink)}.gold{color:var(--gold)}
+.targetbox{text-align:center;padding:24px 10px 18px}.target-label{font-size:12px;color:var(--muted);letter-spacing:3px}.target{font-size:clamp(58px,13vw,92px);line-height:1.3;filter:drop-shadow(0 0 22px #35e7ff66)}.hint{color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:570px;margin:0 auto}.tile{aspect-ratio:1;border-radius:20px;border:1px solid #718cff55;background:linear-gradient(145deg,#26335d,#111a39);font-size:clamp(35px,8vw,54px);box-shadow:0 8px 20px #0005;transition:.12s;touch-action:manipulation}.tile:active{transform:scale(.94)}.tile:hover{border-color:var(--cyan);box-shadow:0 0 22px #35e7ff44}.tile:disabled{opacity:.65;cursor:default}
+.message{text-align:center;min-height:48px;margin:16px 0 10px;padding:13px;border-radius:13px;background:#080f27;color:#fff;border:1px solid #ffffff12;font-weight:700}
+.actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.btn{border:0;border-radius:13px;padding:13px 22px;font-weight:900;letter-spacing:.5px}.primary{background:linear-gradient(90deg,var(--cyan),#8c7bff);color:#071024;box-shadow:0 0 25px #35e7ff44}.secondary{background:#222e52;color:#fff;border:1px solid #8296d955}.danger{background:#351a3a;color:#ff9bd5;border:1px solid #ff3cac66}.bottom{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:17px}.info{padding:15px;border-radius:15px;background:#080f27;border:1px solid #ffffff12}.info b{display:block;margin-bottom:5px}.info span{color:var(--muted);font-size:13px}.footer{text-align:center;color:#7582aa;font-size:12px;margin-top:18px}
+.overlay{position:fixed;inset:0;background:#050817dd;display:none;place-items:center;padding:20px;z-index:5}.overlay.show{display:grid}.modal{max-width:440px;width:100%;text-align:center;background:#121c3b;border:1px solid #35e7ff77;border-radius:24px;padding:28px;box-shadow:0 0 70px #35e7ff33}.modal h2{font-size:32px;margin:0 0 8px}.modal p{color:var(--muted)}
+@media(max-width:560px){.wrap{padding:14px 10px 25px}.stats{grid-template-columns:repeat(2,1fr)}.bottom{grid-template-columns:1fr}.panel{border-radius:18px}.tile{border-radius:15px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <span class="tag">⚡ LIVE STREAM CHALLENGE ⚡</span>
+    <h1 class="logo">NEON BRAIN RUSH</h1>
+    <div class="sub">FOCUS • SPEED • COMBO • VICTORY</div>
+  </header>
+  <main class="panel" id="gamePanel">
+    <section class="stats">
+      <div class="stat"><small>SCORE</small><strong class="cyan" id="score">0</strong></div>
+      <div class="stat"><small>TIME LEFT</small><strong class="pink" id="time">60</strong></div>
+      <div class="stat"><small>COMBO</small><strong class="gold" id="combo">0×</strong></div>
+      <div class="stat"><small>BEST SCORE</small><strong id="best">0</strong></div>
+    </section>
+    <section class="targetbox">
+      <div class="target-label">FIND THIS SYMBOL</div>
+      <div class="target" id="target">💎</div>
+      <div class="hint">नीचे दिए गए बॉक्स में सही निशान पर जल्दी टैप करें!</div>
+    </section>
+    <section class="grid" id="grid" aria-label="Game tiles"></section>
+    <div class="message" id="message" aria-live="polite">गेम शुरू करें और 60 सेकंड में सबसे ज्यादा स्कोर बनाएं!</div>
+    <div class="actions">
+      <button class="btn primary" id="startBtn">▶ START GAME</button>
+      <button class="btn secondary" id="soundBtn">🔊 SOUND ON</button>
+      <button class="btn secondary" id="fullBtn">⛶ FULL SCREEN</button>
+      <button class="btn danger" id="resetBtn">↻ RESET</button>
+    </div>
+    <section class="bottom">
+      <div class="info"><b>🏆 LIVE CHALLENGE</b><span>अपना स्कोर लाइव दिखाएँ और दर्शकों को आपको हराने की चुनौती दें।</span></div>
+      <div class="info"><b>🚀 LEVEL <span id="level">1</span></b><span>हर 5 सही जवाब के बाद गेम की रफ्तार और चुनौती बढ़ेगी।</span></div>
+    </section>
+  </main>
+  <div class="footer">NEON BRAIN RUSH • Made for YouTube Live & Instagram Live</div>
+</div>
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div style="font-size:52px" id="resultEmoji">🏆</div>
+    <h2 id="resultTitle">TIME UP!</h2>
+    <p id="resultText">आपका फाइनल स्कोर: 0</p>
+    <button class="btn primary" id="againBtn">▶ PLAY AGAIN</button>
+  </div>
+</div>
+<script>
+(()=>{
+const symbols=["🍒","🚀","💎","⚡","🎯","👑","🔥","⭐","🍀","🛸","🧿","🪙"];
+const $=id=>document.getElementById(id);
+let score=0,combo=0,time=60,level=1,target=2,playing=false,sound=true,timer=null,tiles=[],audio=null;
+let best=Number(localStorage.getItem("nbrBest")||0);$("best").textContent=best;
+function beep(freq=520,duration=.09,type="sine"){
+ if(!sound)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();let o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(.07,audio.currentTime);g.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+duration)}catch(e){}
+}
+function shuffle(a){return a.sort(()=>Math.random()-.5)}
+function update(){ $("score").textContent=score;$("time").textContent=time;$("combo").textContent=combo+"×";$("level").textContent=level;$("best").textContent=best;}
+function makeRound(){
+ target=Math.floor(Math.random()*symbols.length);
+ let arr=[symbols[target]];
+ while(arr.length<9){let s=symbols[Math.floor(Math.random()*symbols.length)];if(s!==symbols[target]||Math.random()>.75)arr.push(s)}
+ // Guarantee exactly one target
+ arr=arr.filter((s,i)=>s!==symbols[target]||i===0);while(arr.length<9)arr.push(symbols[(target+1+Math.floor(Math.random()*(symbols.length-1)))%symbols.length]);
+ arr=shuffle(arr);if(!arr.includes(symbols[target]))arr[0]=symbols[target];
+ $("target").textContent=symbols[target];$("grid").innerHTML="";
+ arr.forEach(sym=>{let b=document.createElement("button");b.className="tile";b.textContent=sym;b.setAttribute("aria-label","Choose "+sym);b.disabled=!playing;b.addEventListener("click",()=>choose(sym,b));$("grid").appendChild(b)});
+}
+function choose(sym,btn){
+ if(!playing)return;
+ if(sym===symbols[target]){
+  combo++;let pts=10+Math.min(combo,20)*2+level*2;score+=pts;level=Math.min(10,Math.floor(score/150)+1);
+  $("message").textContent="🔥 सही जवाब! +"+pts+" पॉइंट — शानदार कॉम्बो!";
+  beep(650+combo*18,.08,"triangle");if(score>best){best=score;localStorage.setItem("nbrBest",best)}
+  update();makeRound();
+ }else{
+  combo=0;$("message").textContent="❌ गलत! कॉम्बो टूट गया — फिर कोशिश करें।";beep(170,.18,"sawtooth");$("combo").textContent="0×";
+  btn.animate([{transform:"translateX(0)"},{transform:"translateX(-5px)"},{transform:"translateX(5px)"},{transform:"translateX(0)"}],{duration:180});
+ }
+}
+function endGame(){
+ playing=false;clearInterval(timer);timer=null;document.querySelectorAll(".tile").forEach(b=>b.disabled=true);
+ $("resultEmoji").textContent=score>=500?"👑":"🏁";$("resultTitle").textContent=score>=500?"NEON CHAMPION!":"TIME UP!";
+ $("resultText").textContent="आपका फाइनल स्कोर: "+score+" | बेस्ट स्कोर: "+best;
+ $("overlay").classList.add("show");beep(420,.2);setTimeout(()=>beep(620,.25),180);
+}
+function start(){
+ clearInterval(timer);score=0;combo=0;time=60;level=1;playing=true;$("overlay").classList.remove("show");$("message").textContent="GO! सही निशान खोजें!";$("startBtn").textContent="⏱ GAME RUNNING";$("startBtn").disabled=true;update();makeRound();
+ timer=setInterval(()=>{time--;update();if(time<=10&&time>0)beep(300,.04);if(time<=0)endGame()},1000);
+}
+$("startBtn").addEventListener("click",start);
+$("againBtn").addEventListener("click",start);
+$("resetBtn").addEventListener("click",()=>{clearInterval(timer);timer=null;playing=false;score=0;combo=0;time=60;level=1;$("startBtn").disabled=false;$("startBtn").textContent="▶ START GAME";$("message").textContent="गेम शुरू करें और 60 सेकंड में सबसे ज्यादा स्कोर बनाएं!";update();makeRound();$("overlay").classList.remove("show")});
+$("soundBtn").addEventListener("click",()=>{sound=!sound;$("soundBtn").textContent=sound?"🔊 SOUND ON":"🔇 SOUND OFF";if(sound)beep(600)});
+$("fullBtn").addEventListener("click",async()=>{try{if(!document.fullscreenElement)await $("gamePanel").requestFullscreen();else await document.exitFullscreen()}catch(e){$("message").textContent="इस ब्राउज़र में फुल स्क्रीन उपलब्ध नहीं है।"}});
+makeRound();update();
+})();
+</script>
+</body>
+</html>
